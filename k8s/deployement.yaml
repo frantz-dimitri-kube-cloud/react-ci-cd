@@ -1,0 +1,128 @@
+# PersistentVolume descriptor
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+#  namespace: ingressSpace
+  name: ci-cd-persistent-volume
+spec:
+  capacity:
+    storage: 200M
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: react-ci-cd-volume
+  hostPath:
+    path: /data/minikube/react-ci-cd-storage
+
+---
+
+# PersistentVolumeClaim decsriptor
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+#  namespace: ingressSpace
+  name: ci-cd-persistent-volume-claim
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: react-ci-cd-volume
+  resources:
+    requests:
+      storage: 200M
+
+---
+
+# Deployment 1 descriptor
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+#  namespace: ingressSpace
+  name: react-ci-cd-deployment
+
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      name: react-ci-cd
+      version: v1
+
+  template:
+    metadata:
+      labels:
+        name: react-ci-cd
+        version: v1
+        tier: backend
+
+    spec:
+      containers:
+        - name: react-ci-cd-pod
+          image: quay.io/frantz-dimitri/kube-cloud-poc:latest
+          resources:
+            requests:
+              cpu: "0.3"
+              memory: 300M
+            limits:
+              cpu: "0.5"
+              memory: 500M
+
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 4
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 4
+            
+          volumeMounts:
+            - name: ci-cd-devops-storage
+              mountPath: /data/ci-cd/
+
+      volumes:
+        - name: ci-cd-devops-storage
+          persistentVolumeClaim:
+            claimName: ci-cd-persistent-volume-claim
+
+---
+
+# DevOps Blue ClusterIP
+
+apiVersion: v1
+kind: Service
+metadata:
+#  namespace: ingressSpace
+  name: react-ci-cd-service
+spec:
+  type: LoadBalancer
+
+  selector:
+      name: react-ci-cd
+      version: v1
+
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      
