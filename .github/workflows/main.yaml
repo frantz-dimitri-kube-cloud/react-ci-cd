@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        name: Login to Docker Registry
+      - name: Login to Docker Registry
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
