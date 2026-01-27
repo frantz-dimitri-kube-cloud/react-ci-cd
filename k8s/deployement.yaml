@@ -62,7 +62,7 @@ spec:
     spec:
       containers:
         - name: react-ci-cd-pod
-          image: frantzdimitrikubecloud/hello-react:latest # {"$imagepolicy": "flux-system:react-ci-cd-policy"}
+          image: frantzdimitrikubecloud/hello-react:1.0.1 # {"$imagepolicy": "flux-system:react-ci-cd-policy"}
           resources:
             requests:
               cpu: "0.3"
