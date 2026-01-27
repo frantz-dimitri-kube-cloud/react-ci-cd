@@ -20,7 +20,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-#  namespace: ingressSpace
+  namespace: default
   name: ci-cd-persistent-volume-claim
 spec:
   accessModes:
@@ -37,7 +37,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-#  namespace: ingressSpace
+  namespace: default
   name: react-ci-cd-deployment
 
 spec:
@@ -112,7 +112,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-#  namespace: ingressSpace
+  namespace: default
   name: react-ci-cd-service
 spec:
   type: LoadBalancer

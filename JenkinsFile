@@ -1,0 +1,12 @@
+node('jenkins-slave') {
+    
+     stage('test pipeline') {
+        sh(script: """
+            echo "hello"
+           git clone https://github.com/frantz-dimitri-kube-cloud/react-ci-cd.git
+           cd ./react-ci-cd/
+           
+           docker build . -t test
+        """)
+    }
+}
