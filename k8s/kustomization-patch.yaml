@@ -1,0 +1,24 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata: 
+  name: react-ci-cd-deploy
+  namespace: flux-system
+spec: 
+  interval: 1m0s
+  path: "./k8s/"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: react-ci-cd-app
+    namespace: flux-system
+  targetNamespace: default
+  patches:
+    - patch: |
+        - op: replace
+          path: /spec/replicas
+          value: 3
+      target:
+        kind: Deployment
+        name: react-ci-cd-deployment
+        namespace: default
+  
