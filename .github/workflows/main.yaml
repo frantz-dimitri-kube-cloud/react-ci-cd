@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'release.version'
+    paths-ignore:
+      - 'README.md'
 
 jobs:
   ci-testing:
